@@ -11,31 +11,58 @@ const client = new Client({
     ],
 });
 
-client.on('ready', async(c) => {
-    console.log(`${c.user.tag} is online.`)
+client.on('ready', (c) => {
+    console.log(`${c.user.tag} is online.`);
 });
 
 client.on('messageCreate', (message) => {
-   try {
-     if (message.content === 'reset') {
-        resetConnectioned(message);
-     }
-   } catch (error) {
-    console.log(error);
-   }
+    const channel = message.guild.channels.cache.get("1167212482243350569");
+    const msg = message.content;
+    try {
+        if (msg.slice(0, 11) === 'Connections') {
+            message.member.roles.add(
+                message.guild.roles.cache.find(r => r.name === 'connectioned')
+            );
+        } else if (msg.toLocaleLowerCase() === 'daily reset of connections') {
+            console.log('else if is working');
+            resetConnectioned(message)
+                .then(() => {
+                    channel.permissionOverwrites.create(
+                        channel.guild.roles.cache.find(
+                            r => r.name === 'connectioned'
+                        ), {
+                            ViewChannel: true,
+                            SendMessages: true,
+                        }
+                    )
+                    
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 function resetConnectioned(message) {
-    const role = message.guild.roles.cache.find(r => r.name === 'connectioned');
-    message.guild.roles.create({
-        name: role.name,
-        color: role.color,
-        hoist: role.hoist,
-        position: role.position,
-        permissions: role.permissions,
-        mentionable: role.mentionable,
+    return new Promise((resolve, reject) => {
+        let connectionedRole = message.guild.roles.cache.find(r => r.name === 'connectioned');
+        const temp = connectionedRole;
+        message.guild.roles
+            .create({
+                name: 'connectioned',
+                color: temp.color,
+            })
+            .then((newRole) => {
+                temp.delete().then(() => {
+                    resolve(newRole);
+                });
+            })
+            .catch(reject);
     });
-    role.delete('yes.')
 }
+
 
 client.login(process.env.TOKEN);
