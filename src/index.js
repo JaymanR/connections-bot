@@ -11,7 +11,7 @@ const client = new Client({
     ],
 });
 
-client.on('ready', (c) => {
+client.once('ready', (c) => {
     console.log(`${c.user.tag} is online.`);
 });
 
@@ -63,6 +63,6 @@ function resetConnectioned(message) {
             .catch(reject);
     });
 }
-
+eventHandler(client);
 
 client.login(process.env.TOKEN);
