@@ -1,1 +1,0 @@
-require("dot env").config();

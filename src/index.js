@@ -1,6 +1,6 @@
-require("dotenv").config();
-const { Client, IntentsBitField } = require("discord.js");
-const eventHandler = require("./handlers/eventHandler");
+require('dotenv').config();
+const { Client, IntentsBitField } = require('discord.js');
+const eventHandler = require('./handlers/eventHandler.js');;
 
 const client = new Client({
   intents: [
@@ -11,20 +11,20 @@ const client = new Client({
   ],
 });
 /** 
-client.on("messageCreate", (message) => {
-  const channel = message.guild.channels.cache.get("1167212482243350569");
+client.on('messageCreate', (message) => {
+  const channel = message.guild.channels.cache.get('1167212482243350569');
   const msg = message.content;
   try {
-    if (msg.slice(0, 11) === "Connections") {
+    if (msg.slice(0, 11) === 'Connections') {
       message.member.roles.add(
-        message.guild.roles.cache.find((r) => r.name === "connectioned")
+        message.guild.roles.cache.find((r) => r.name === 'connectioned')
       );
-    } else if (msg.toLocaleLowerCase() === "daily reset of connections") {
-      console.log("else if is working");
+    } else if (msg.toLocaleLowerCase() === 'daily reset of connections') {
+      console.log('else if is working');
       resetConnectioned(message)
         .then(() => {
           channel.permissionOverwrites.create(
-            channel.guild.roles.cache.find((r) => r.name === "connectioned"),
+            channel.guild.roles.cache.find((r) => r.name === 'connectioned'),
             {
               ViewChannel: true,
               SendMessages: true,
@@ -43,12 +43,12 @@ client.on("messageCreate", (message) => {
 function resetConnectioned(message) {
   return new Promise((resolve, reject) => {
     let connectionedRole = message.guild.roles.cache.find(
-      (r) => r.name === "connectioned"
+      (r) => r.name === 'connectioned'
     );
     const temp = connectionedRole;
     message.guild.roles
       .create({
-        name: "connectioned",
+        name: 'connectioned',
         color: temp.color,
       })
       .then((newRole) => {

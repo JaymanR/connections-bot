@@ -1,11 +1,12 @@
 module.exports = {
-  name: "bing",
-  description: "bong!",
+  //deleted: true,
+  name: "ping",
+  description: "your websocket ping",
   //devOnly: Boolean,
   //testOnly: Boolean,
   //options: Object[],
 
   callback: (client, interaction) => {
-    interaction.reply(`bong! ${client.ws.ping}ms`);
+    interaction.reply(`${client.ws.ping}ms`);
   },
 };
