@@ -1,6 +1,8 @@
-require('dotenv').config();
-const { Client, IntentsBitField } = require('discord.js');
-const eventHandler = require('./handlers/eventHandler.js');;
+require("dotenv").config();
+require("colors");
+const { Client, IntentsBitField } = require("discord.js");
+const mongoose = require("mongoose");
+const eventHandler = require("./handlers/eventHandler.js");
 
 const client = new Client({
   intents: [
@@ -10,7 +12,8 @@ const client = new Client({
     IntentsBitField.Flags.MessageContent,
   ],
 });
-/** 
+
+/*
 client.on('messageCreate', (message) => {
   const channel = message.guild.channels.cache.get('1167212482243350569');
   const msg = message.content;
@@ -39,7 +42,9 @@ client.on('messageCreate', (message) => {
     console.log(error);
   }
 });
+*/
 
+/** 
 function resetConnectioned(message) {
   return new Promise((resolve, reject) => {
     let connectionedRole = message.guild.roles.cache.find(
@@ -60,6 +65,17 @@ function resetConnectioned(message) {
   });
 }
 **/
-eventHandler(client);
 
-client.login(process.env.TOKEN);
+(async () => {
+  try {
+    mongoose.set("strictQuery", false);
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("Connected to DB".magenta);
+
+    eventHandler(client);
+
+    client.login(process.env.TOKEN);
+  } catch (error) {
+    console.log(error);
+  }
+})();
