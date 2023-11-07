@@ -9,6 +9,10 @@ const levelSchema = new Schema({
         type: String,
         required: true,
     },
+    name: {
+        type: String,
+        required: true,
+    },
     xp: {
         type: Number,
         default: 0,

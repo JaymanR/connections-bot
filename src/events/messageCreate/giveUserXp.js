@@ -2,6 +2,7 @@ const { Client, Message } = require("discord.js");
 const Level = require("../../models/Level.js");
 const calculateLevelXp = require("../../utils/calculateLevelXp.js");
 const checkUserAnswer = require("../../utils/checkUserAnswer.js");
+const moment = require("moment-timezone");
 
 function getXp(min, max) {
   min = Math.ceil(min);
@@ -44,12 +45,12 @@ function response(array) {
  *
  */
 module.exports = async (client, message) => {
-
   if (!message.inGuild() || message.author.bot) return;
 
   try {
-    if (message.content.replace(/\n/g, "").slice(0, 18) === "Connections Puzzle") {
-      
+    if (
+      message.content.replace(/\n/g, "").slice(0, 18) === "Connections Puzzle"
+    ) {
       const puzzleAnswer = message.content.replace(/\n/g, "").slice(23);
       const userGuesses = checkUserAnswer(puzzleAnswer); //array [Number correct, Number incorrect]
       const xpAmount = xpToGive(userGuesses);
@@ -63,8 +64,11 @@ module.exports = async (client, message) => {
       const level = await Level.findOne(query);
 
       if (level) {
-        if (level.date === new Date().toDateString()) {
-          message.reply(`You have already posted an answer, Try again tomorrow!`)
+        const now = moment().tz("America/New_York").toDate().toDateString();
+        if (level.date === now) {
+          message.reply(
+            "You have already posted an answer, Try again tomorrow!"
+          );
           return;
         }
 
@@ -72,7 +76,8 @@ module.exports = async (client, message) => {
         level.correctGuesses += userGuesses[0];
         level.incorrectGuesses += userGuesses[1];
         level.games += 1;
-        level.date = new Date().toDateString();
+        level.date = now;
+        level.name = message.author.username;
 
         if (level.xp > calculateLevelXp(level.level)) {
           level.xp = 0;
@@ -101,7 +106,8 @@ module.exports = async (client, message) => {
           correctGuesses: userGuesses[0],
           incorrectGuesses: userGuesses[1],
           games: 1,
-          date: new Date().toDateString(),
+          date: moment().tz("America/New_York").toDate().toDateString(),
+          name: message.author.username,
         });
 
         message.reply(respond);
