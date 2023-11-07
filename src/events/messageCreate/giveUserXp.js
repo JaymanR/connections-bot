@@ -23,6 +23,20 @@ function xpToGive(array) {
   }
 }
 
+function response(array) {
+  if (array[0] === 4 && !array[1]) {
+    return "Good Job!";
+  } else if (array[1] === 4 && !array[0]) {
+    return "I tried so hard...and got so far...";
+  } else if (array[0] < array[1]) {
+    return "R.I.P.";
+  } else if (array[0] > array[1]) {
+    return "Good Answer! Good Answer!";
+  } else {
+    return "....nice.";
+  }
+}
+
 /**
  *
  * @param {Client} client
@@ -39,6 +53,7 @@ module.exports = async (client, message) => {
       const puzzleAnswer = message.content.replace(/\n/g, "").slice(23);
       const userGuesses = checkUserAnswer(puzzleAnswer); //array [Number correct, Number incorrect]
       const xpAmount = xpToGive(userGuesses);
+      const respond = response(userGuesses);
 
       const query = {
         userId: message.author.id,
@@ -48,7 +63,10 @@ module.exports = async (client, message) => {
       const level = await Level.findOne(query);
 
       if (level) {
-        if (level.date === new Date().toDateString()) return;
+        if (level.date === new Date().toDateString()) {
+          message.reply(`You have already posted an answer, Try again tomorrow!`)
+          return;
+        }
 
         level.xp += xpAmount;
         level.correctGuesses += userGuesses[0];
@@ -64,6 +82,8 @@ module.exports = async (client, message) => {
             `${message.member} you have leveled up to **level ${level.level}**`
           );
         }
+
+        message.reply(respond);
 
         await level.save().catch((error) => {
           console.log(`Error saving updated level - ${error}`);
@@ -83,6 +103,8 @@ module.exports = async (client, message) => {
           games: 1,
           date: new Date().toDateString(),
         });
+
+        message.reply(respond);
 
         await newLevel.save();
       }
